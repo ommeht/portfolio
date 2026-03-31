@@ -75,7 +75,7 @@ export const Navbar = ({ activeSection }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
-              Krish's Portfolio
+              Om's Portfolio
             </motion.span>
           </Link>
 

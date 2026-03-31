@@ -22,7 +22,7 @@ export const Footer = () => {
               whileHover={{ scale: 1.05 }}
               className="bg-gradient-to-r from-purple-600 via-indigo-500 to-blue-500 text-transparent bg-clip-text text-xl font-bold"
             >
-              Krish Moond
+             Om Mehta
             </motion.div>
             <p className="text-gray-600 dark:text-gray-400 mt-1">
               Building the web, one pixel at a time.
@@ -31,7 +31,7 @@ export const Footer = () => {
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
             <div className="flex space-x-4">
               <motion.a
-                href="https://github.com/KrishMoond"
+                href="https://github.com/ommeht/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-700 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
@@ -40,7 +40,7 @@ export const Footer = () => {
                 <FaGithub size={22} />
               </motion.a>
               <motion.a
-                href="https://linkedin.com/in/krish-moond"
+                href="https://www.linkedin.com/in/om-mehta-135443294/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
@@ -49,7 +49,7 @@ export const Footer = () => {
                 <FaLinkedin size={22} />
               </motion.a>
               <motion.a
-                href="mailto:moondkrish921@gmail.com"
+                href="mailto:ommehta708@gmail.com"
                 className="text-gray-700 dark:text-gray-300 hover:text-red-600 dark:hover:text-red-400 transition-colors"
                 whileHover={{ y: -3, scale: 1.1 }}
               >
@@ -57,7 +57,7 @@ export const Footer = () => {
               </motion.a>
             </div>
             <div className="mt-4 md:mt-0">
-              <nav className="flex space-x-6">
+              <nav className="flex flex-wrap gap-x-4 gap-y-2 justify-center">
                 <Link to="/" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">
                   Home
                 </Link>
@@ -77,7 +77,7 @@ export const Footer = () => {
         
         <div className="border-t border-gray-200 dark:border-gray-700 mt-8 pt-6 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-500 dark:text-gray-400 text-sm">
-            © {currentYear} Krish Moond. All rights reserved.
+            © {currentYear} Om Mehta. All rights reserved.
           </p>
           <motion.button
             onClick={scrollToTop}

@@ -5,52 +5,141 @@ import { TypeAnimation } from "react-type-animation";
 import { motion } from "framer-motion";
 
 export const Home = () => {
-  const canvasRef = useRef(null);
-
-  // Particle Background
+  const bgCanvasRef = useRef(null);
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = bgCanvasRef.current;
+    if (!canvas) return;
+    
     const ctx = canvas.getContext("2d");
-
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    const particles = [];
-    const particleCount = 100;
-
-    for (let i = 0; i < particleCount; i++) {
-      particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        radius: Math.random() * 2 + 1,
-        dx: (Math.random() - 0.5) * 1.5,
-        dy: (Math.random() - 0.5) * 1.5,
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+    
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+    const celestialObjects = [];
+    
+    // Sun
+    celestialObjects.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      radius: 30,
+      color: "#FDB813",
+      glowRadius: 100,
+      glowColor: "rgba(253, 184, 19, 0.2)",
+      isFixed: true
+    });
+    
+    // Planets
+    const planetColors = ["#8A9597", "#E7CDCD", "#6B93D6", "#C1440E", "#E29468", "#C7AA72"];
+    const orbitRadii = [120, 180, 250, 320, 400, 480];
+    
+    for (let i = 0; i < 6; i++) {
+      celestialObjects.push({
+        angle: Math.random() * Math.PI * 2,
+        orbitRadius: orbitRadii[i],
+        radius: 5 + i * 3,
+        speed: 0.002 / (i * 0.5 + 1),
+        color: planetColors[i],
+        orbit: {
+          x: window.innerWidth / 2,
+          y: window.innerHeight / 2,
+          visible: true
+        }
       });
     }
-
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#A5B4FC"; // indigo-300
-
-      particles.forEach((p) => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-
-        p.x += p.dx;
-        p.y += p.dy;
-
-        if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+    
+    // Stars
+    for (let i = 0; i < 120; i++) {
+      celestialObjects.push({
+        x: Math.random() * window.innerWidth,
+        y: Math.random() * window.innerHeight,
+        radius: Math.random() * 1.5 + 0.5,
+        color: "rgba(255, 255, 255, 0.8)",
+        twinkle: {
+          speed: Math.random() * 0.03 + 0.01,
+          phase: Math.random() * Math.PI * 2
+        },
+        isStar: true
       });
-
-      requestAnimationFrame(animate);
+    }
+    
+    // Animation loop
+    let animationId;
+    
+    const renderFrame = () => {
+      // Clear canvas
+      ctx.fillStyle = "#0f0f1e"; // Dark blue background
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw celestial objects
+      celestialObjects.forEach(obj => {
+        if (obj.isStar) {
+          // Animate star twinkle
+          obj.twinkle.phase += obj.twinkle.speed;
+          const opacity = 0.5 + Math.sin(obj.twinkle.phase) * 0.5;
+          
+          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+          ctx.beginPath();
+          ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (obj.isFixed) {
+          // Draw sun with glow
+          ctx.beginPath();
+          const gradient = ctx.createRadialGradient(
+            obj.x, obj.y, 0,
+            obj.x, obj.y, obj.glowRadius
+          );
+          gradient.addColorStop(0, obj.color);
+          gradient.addColorStop(0.2, obj.color);
+          gradient.addColorStop(1, "rgba(253, 184, 19, 0)");
+          
+          ctx.fillStyle = gradient;
+          ctx.arc(obj.x, obj.y, obj.glowRadius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Sun core
+          ctx.fillStyle = obj.color;
+          ctx.beginPath();
+          ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Update planet position
+          obj.angle += obj.speed;
+          const x = obj.orbit.x + Math.cos(obj.angle) * obj.orbitRadius;
+          const y = obj.orbit.y + Math.sin(obj.angle) * obj.orbitRadius;
+          
+          // Draw orbit
+          if (obj.orbit.visible) {
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.arc(obj.orbit.x, obj.orbit.y, obj.orbitRadius, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          
+          // Draw planet
+          ctx.fillStyle = obj.color;
+          ctx.beginPath();
+          ctx.arc(x, y, obj.radius, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      
+      animationId = requestAnimationFrame(renderFrame);
     };
-
-    animate();
+    
+    // Start animation
+    renderFrame();
+    
+    // Cleanup
+    return () => {
+      cancelAnimationFrame(animationId);
+      window.removeEventListener('resize', resizeCanvas);
+    };
   }, []);
 
-  // Tilt effect
+  // Tilt effect for profile image
   useEffect(() => {
     const handleMouseMove = (e) => {
       const profileImg = document.getElementById("profile-img");
@@ -64,15 +153,18 @@ export const Home = () => {
       const tiltY = (x - centerX) / 20;
       profileImg.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.05)`;
     };
+    
     const handleMouseLeave = () => {
       const profileImg = document.getElementById("profile-img");
       if (profileImg) profileImg.style.transform = "";
     };
+    
     const imgContainer = document.getElementById("img-container");
     if (imgContainer) {
       imgContainer.addEventListener("mousemove", handleMouseMove);
       imgContainer.addEventListener("mouseleave", handleMouseLeave);
     }
+    
     return () => {
       if (imgContainer) {
         imgContainer.removeEventListener("mousemove", handleMouseMove);
@@ -112,8 +204,14 @@ export const Home = () => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full -z-10 opacity-70 blur-sm" />
-      <div className="relative z-10 container mx-auto px-4 py-20">
+
+      <canvas 
+        ref={bgCanvasRef} 
+        className="absolute top-0 left-0 w-full h-full" 
+        style={{ zIndex: 0 }}
+      />
+      
+      <div className="relative z-10 container mx-auto px-4 py-12 sm:py-16 md:py-20">
         <motion.div
           className="flex flex-col md:flex-row items-center justify-between"
           initial="hidden"
@@ -125,19 +223,19 @@ export const Home = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-600 rounded-full blur-2xl opacity-60 group-hover:opacity-100"></div>
               <img
                 id="profile-img"
-                src="/src/assets/bimoji.png"
-                alt="Krish Moond"
-                className="relative z-10 rounded-full w-64 h-64 object-cover shadow-2xl"
+                src="https://media.licdn.com/dms/image/v2/D5603AQFnU-GKluPKcQ/profile-displayphoto-scale_200_200/B56Z1CntDTK4AY-/0/1774939203412?e=1776297600&v=beta&t=YKSBp6M4zdV8JT9i2AfLAWv1qxAXqGwfUVIrVMRnm2k"
+                alt="Om Mehta"
+                className="relative z-10 rounded-full w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 object-cover shadow-2xl"
               />
             </div>
           </motion.div>
 
           <motion.div className="md:w-1/2 text-center md:text-left" variants={itemVariants}>
-            <motion.h1 className="text-5xl font-extrabold mb-4 text-white" variants={itemVariants}>
-              Hi, I'm <span className={gradientText}>Krish Moond</span>
+            <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 text-white" variants={itemVariants}>
+              Hi, I'm <span className={gradientText}>Om Mehta</span>
             </motion.h1>
 
-            <motion.h2 className="text-2xl text-indigo-200 mb-6" variants={itemVariants}>
+            <motion.h2 className="text-lg sm:text-xl md:text-2xl text-indigo-200 mb-6" variants={itemVariants}>
               <TypeAnimation
                 sequence={[
                   "Computer Science Student",
@@ -154,9 +252,16 @@ export const Home = () => {
               />
             </motion.h2>
 
-            <motion.p className="text-gray-300 mb-8 leading-relaxed" variants={itemVariants}>
-              Crafting delightful digital experiences with a blend of creative design and modern code.
-            </motion.p>
+            <motion.p
+  className="text-base sm:text-lg md:text-xl font-medium mb-8 leading-relaxed bg-gradient-to-r from-white-500 via-white-400 to-yellow-300 bg-clip-text text-transparent"
+  variants={itemVariants}
+>
+  Crafting delightful digital experiences with a blend of creative design and modern code.
+</motion.p>
+
+
+
+
 
             <motion.div className="flex flex-wrap gap-4 justify-center md:justify-start" variants={itemVariants}>
               <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
@@ -170,7 +275,7 @@ export const Home = () => {
                   <span>View Projects</span>
                 </Link>
               </motion.div>
-              <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap" className="hidden md:block">
+              <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
                 <a href="/resume.pdf" download className="px-6 py-3 bg-pink-600 text-white rounded-lg flex items-center gap-2">
                   <span>Download CV</span>
                   <FaDownload />
@@ -179,16 +284,16 @@ export const Home = () => {
             </motion.div>
 
             <motion.div className="flex mt-10 space-x-6 justify-center md:justify-start" variants={itemVariants}>
-              <motion.a href="https://github.com/KrishMoond" target="_blank" className="text-white hover:text-indigo-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="https://github.com/ommeht/" target="_blank" className="text-white hover:text-indigo-400" whileHover={{ scale: 1.2 }}>
                 <FaGithub size={26} />
               </motion.a>
-              <motion.a href="https://linkedin.com/in/krish-moond" target="_blank" className="text-white hover:text-blue-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="https://www.linkedin.com/in/om-mehta-135443294/" target="_blank" className="text-white hover:text-blue-400" whileHover={{ scale: 1.2 }}>
                 <FaLinkedin size={26} />
               </motion.a>
-              <motion.a href="mailto:moondkrish921@gmail.com" className="text-white hover:text-red-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="mailto:ommehta708@gmail.com" className="text-white hover:text-red-400" whileHover={{ scale: 1.2 }}>
                 <FaEnvelope size={26} />
               </motion.a>
-              <motion.a href="tel:8708304851" className="text-white hover:text-green-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="tel:8901408941" className="text-white hover:text-green-400" whileHover={{ scale: 1.2 }}>
                 <FaPhone size={26} />
               </motion.a>
             </motion.div>
@@ -200,3 +305,5 @@ export const Home = () => {
 };
 
 export default Home;
+
+
