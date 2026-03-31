@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaGraduationCap, FaMedal, FaAward, FaBook, FaStar, FaCodeBranch, FaLaptopCode } from "react-icons/fa";
 import { motion } from "framer-motion";
 
-export const Education = () => {
+export const Education = ({ isDarkMode }) => {
   const [hoveredCert, setHoveredCert] = useState(null);
   
   const education = [
@@ -312,7 +312,7 @@ export const Education = () => {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl">
+            <div className="relative bg-white dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl">
               <h3 className="text-xl font-semibold mb-6 flex items-center text-gray-800 dark:text-white">
                 <motion.div
                   animate={{ 
@@ -493,7 +493,7 @@ export const Education = () => {
               transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
             />
             
-            <div className="relative bg-white/30 dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl">
+            <div className="relative bg-white dark:bg-gray-800/30 backdrop-blur-sm rounded-xl p-6 shadow-xl">
               <h3 className="text-xl font-semibold mb-6 flex items-center text-gray-800 dark:text-white">
                 <motion.div
                   animate={{ 
@@ -520,6 +520,7 @@ export const Education = () => {
               
               <motion.div 
                 className="space-y-4"
+                key={isDarkMode}
                 variants={containerVariants}
                 initial="hidden"
                 animate="visible"
@@ -527,12 +528,11 @@ export const Education = () => {
                 {certificates.map((cert, index) => (
                   <motion.div
                     key={index}
-                    className="bg-white/70 dark:bg-gray-700/70 p-4 rounded-lg shadow-md transition-all relative overflow-hidden"
+                    className="bg-white dark:bg-gray-700 p-4 rounded-lg shadow-md transition-all relative overflow-hidden"
                     variants={itemVariants}
                     whileHover={{ 
                       y: -5,
                       boxShadow: "0 15px 30px rgba(0,0,0,0.1)",
-                      backgroundColor: `${cert.color}05`  // Very subtle background tint on hover
                     }}
                     onHoverStart={() => setHoveredCert(index)}
                     onHoverEnd={() => setHoveredCert(null)}

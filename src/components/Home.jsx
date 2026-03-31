@@ -4,7 +4,7 @@ import { FaGithub, FaLinkedin, FaEnvelope, FaPhone, FaDownload } from "react-ico
 import { TypeAnimation } from "react-type-animation";
 import { motion } from "framer-motion";
 
-export const Home = () => {
+export const Home = ({ isDarkMode }) => {
   const bgCanvasRef = useRef(null);
   useEffect(() => {
     const canvas = bgCanvasRef.current;
@@ -69,23 +69,22 @@ export const Home = () => {
     let animationId;
     
     const renderFrame = () => {
-      // Clear canvas
-      ctx.fillStyle = "#0f0f1e"; // Dark blue background
+      const bg = isDarkMode ? "#0f0f1e" : "#e8f0fe";
+      ctx.fillStyle = bg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       // Draw celestial objects
       celestialObjects.forEach(obj => {
         if (obj.isStar) {
-          // Animate star twinkle
           obj.twinkle.phase += obj.twinkle.speed;
           const opacity = 0.5 + Math.sin(obj.twinkle.phase) * 0.5;
-          
-          ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
+          ctx.fillStyle = isDarkMode
+            ? `rgba(255, 255, 255, ${opacity})`
+            : `rgba(80, 80, 180, ${opacity * 0.6})`;
           ctx.beginPath();
           ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
           ctx.fill();
         } else if (obj.isFixed) {
-          // Draw sun with glow
           ctx.beginPath();
           const gradient = ctx.createRadialGradient(
             obj.x, obj.y, 0,
@@ -94,31 +93,25 @@ export const Home = () => {
           gradient.addColorStop(0, obj.color);
           gradient.addColorStop(0.2, obj.color);
           gradient.addColorStop(1, "rgba(253, 184, 19, 0)");
-          
           ctx.fillStyle = gradient;
           ctx.arc(obj.x, obj.y, obj.glowRadius, 0, Math.PI * 2);
           ctx.fill();
-          
-          // Sun core
           ctx.fillStyle = obj.color;
           ctx.beginPath();
           ctx.arc(obj.x, obj.y, obj.radius, 0, Math.PI * 2);
           ctx.fill();
         } else {
-          // Update planet position
           obj.angle += obj.speed;
           const x = obj.orbit.x + Math.cos(obj.angle) * obj.orbitRadius;
           const y = obj.orbit.y + Math.sin(obj.angle) * obj.orbitRadius;
-          
-          // Draw orbit
           if (obj.orbit.visible) {
             ctx.beginPath();
-            ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+            ctx.strokeStyle = isDarkMode
+              ? "rgba(255, 255, 255, 0.1)"
+              : "rgba(0, 0, 100, 0.15)";
             ctx.arc(obj.orbit.x, obj.orbit.y, obj.orbitRadius, 0, Math.PI * 2);
             ctx.stroke();
           }
-          
-          // Draw planet
           ctx.fillStyle = obj.color;
           ctx.beginPath();
           ctx.arc(x, y, obj.radius, 0, Math.PI * 2);
@@ -129,15 +122,13 @@ export const Home = () => {
       animationId = requestAnimationFrame(renderFrame);
     };
     
-    // Start animation
     renderFrame();
     
-    // Cleanup
     return () => {
       cancelAnimationFrame(animationId);
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, []);
+  }, [isDarkMode]);
 
   // Tilt effect for profile image
   useEffect(() => {
@@ -231,18 +222,22 @@ export const Home = () => {
           </motion.div>
 
           <motion.div className="md:w-1/2 text-center md:text-left" variants={itemVariants}>
-            <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 text-white" variants={itemVariants}>
+            <motion.h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold mb-4 dark:text-white text-gray-800" variants={itemVariants}>
               Hi, I'm <span className={gradientText}>Om Mehta</span>
             </motion.h1>
 
-            <motion.h2 className="text-lg sm:text-xl md:text-2xl text-indigo-200 mb-6" variants={itemVariants}>
+            <motion.h2 className="text-lg sm:text-xl md:text-2xl dark:text-indigo-200 text-indigo-600 mb-6" variants={itemVariants}>
               <TypeAnimation
                 sequence={[
                   "Computer Science Student",
                   1000,
-                  "Frontend Developer",
+                  "Full Stack Web Developer",
                   1000,
                   "UI/UX Enthusiast",
+                  1000,
+                  "AI Enthusiast",
+                  1000,
+                   "Lifelong Learner",
                   1000,
                   "Problem Solver",
                   1000,
@@ -253,7 +248,7 @@ export const Home = () => {
             </motion.h2>
 
             <motion.p
-  className="text-base sm:text-lg md:text-xl font-medium mb-8 leading-relaxed bg-gradient-to-r from-white-500 via-white-400 to-yellow-300 bg-clip-text text-transparent"
+  className="text-base sm:text-lg md:text-xl font-medium mb-8 leading-relaxed dark:text-yellow-300 text-gray-800"
   variants={itemVariants}
 >
   Crafting delightful digital experiences with a blend of creative design and modern code.
@@ -271,7 +266,7 @@ export const Home = () => {
                 </Link>
               </motion.div>
               <motion.div variants={buttonVariants} whileHover="hover" whileTap="tap">
-                <Link to="/projects" className="px-6 py-3 border-2 border-indigo-400 text-indigo-200 rounded-lg flex items-center gap-2">
+                <Link to="/projects" className="px-6 py-3 border-2 border-indigo-400 dark:text-indigo-200 text-indigo-600 rounded-lg flex items-center gap-2">
                   <span>View Projects</span>
                 </Link>
               </motion.div>
@@ -284,16 +279,16 @@ export const Home = () => {
             </motion.div>
 
             <motion.div className="flex mt-10 space-x-6 justify-center md:justify-start" variants={itemVariants}>
-              <motion.a href="https://github.com/ommeht/" target="_blank" className="text-white hover:text-indigo-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="https://github.com/ommeht/" target="_blank" className="dark:text-white text-gray-700 hover:text-indigo-400" whileHover={{ scale: 1.2 }}>
                 <FaGithub size={26} />
               </motion.a>
-              <motion.a href="https://www.linkedin.com/in/om-mehta-135443294/" target="_blank" className="text-white hover:text-blue-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="https://www.linkedin.com/in/om-mehta-135443294/" target="_blank" className="dark:text-white text-gray-700 hover:text-blue-400" whileHover={{ scale: 1.2 }}>
                 <FaLinkedin size={26} />
               </motion.a>
-              <motion.a href="mailto:ommehta708@gmail.com" className="text-white hover:text-red-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="mailto:ommehta708@gmail.com" className="dark:text-white text-gray-700 hover:text-red-400" whileHover={{ scale: 1.2 }}>
                 <FaEnvelope size={26} />
               </motion.a>
-              <motion.a href="tel:8901408941" className="text-white hover:text-green-400" whileHover={{ scale: 1.2 }}>
+              <motion.a href="tel:8901408941" className="dark:text-white text-gray-700 hover:text-green-400" whileHover={{ scale: 1.2 }}>
                 <FaPhone size={26} />
               </motion.a>
             </motion.div>

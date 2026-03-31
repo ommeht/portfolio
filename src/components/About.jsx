@@ -30,7 +30,7 @@ export const About = () => {
     
     const interval = setInterval(() => {
       if (i < message.length) {
-        setText(prev => prev + message[i]);
+        setText(message.slice(0, i + 1));
         i++;
       } else {
         setIsTypingComplete(true);

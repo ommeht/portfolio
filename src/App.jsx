@@ -56,15 +56,19 @@ const Layout = ({ children, isDarkMode, toggleDarkMode, particlesOptions, partic
 };
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    const saved = localStorage.getItem('darkMode');
+    return saved ? JSON.parse(saved) : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
 
-  // Initialize using system preference
   useEffect(() => {
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add("dark");
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
-  }, []);
+    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
+  }, [isDarkMode]);
 
   const particlesInit = async (main) => {
     await loadFull(main);
@@ -165,8 +169,7 @@ function App() {
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-    document.documentElement.classList.toggle("dark");
+    setIsDarkMode(prev => !prev);
   };
 
   // Memoized Layout props to prevent unnecessary re-renders
@@ -182,7 +185,7 @@ function App() {
       <Routes>
         <Route path="/" element={
           <Layout {...layoutProps}>
-            <Home />
+            <Home isDarkMode={isDarkMode} />
           </Layout>
         } />
         <Route path="/home" element={<Navigate to="/" replace />} />
@@ -203,7 +206,7 @@ function App() {
         } />
         <Route path="/education" element={
           <Layout {...layoutProps}>
-            <Education />
+            <Education isDarkMode={isDarkMode} />
           </Layout>
         } />
         <Route path="/contact" element={
