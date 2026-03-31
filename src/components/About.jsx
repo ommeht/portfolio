@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import { FaCode, FaLaptopCode, FaServer, FaUsers } from "react-icons/fa";
 import { motion } from "framer-motion";
 import { Activity, Code, Database, FileCode, GitBranch, GitPullRequest, HardDrive, Layers, Server, Wifi } from "lucide-react";
@@ -299,13 +300,15 @@ export const About = () => {
           transition={{ delay: 0.3, duration: 0.6 }}
           className="text-center mt-10"
         >
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.95 }}
-            className="bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-blue-700 transition"
-          >
-            Let's Connect 🚀
-          </motion.button>
+          <Link to="/contact">
+            <motion.button
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              className="bg-blue-600 text-white px-6 py-3 rounded-full text-lg font-semibold shadow-md hover:bg-blue-700 transition"
+            >
+              Let's Connect 🚀
+            </motion.button>
+          </Link>
         </motion.div>
       </div>
     </section>

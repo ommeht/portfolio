@@ -5,8 +5,8 @@ import emailjs from '@emailjs/browser';
 
 export const Contact = () => {
   const [formData, setFormData] = useState({
-    name: "",
-    email: "",
+    from_name: "",
+    from_email: "",
     subject: "",
     message: "",
   });
@@ -48,7 +48,7 @@ export const Contact = () => {
       .then(() => {
         setIsSubmitting(false);
         setSubmitStatus('success');
-        setFormData({ name: '', email: '', subject: '', message: '' });
+        setFormData({ from_name: '', from_email: '', subject: '', message: '' });
         setTimeout(() => setSubmitStatus(null), 5000);
       })
       .catch(() => {
@@ -328,13 +328,12 @@ export const Contact = () => {
                   <input
                     type="text"
                     id="name"
-                    name="name"
-                    value={formData.name}
+                    name="from_name"
+                    value={formData.from_name}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700/50 text-white transition-all"
                     placeholder="Name"
-                    name="from_name"
                   />
                   <div className="absolute inset-0 border border-blue-400/0 rounded-lg pointer-events-none transition-all peer-focus:border-blue-400/50" />
                 </motion.div>
@@ -354,13 +353,12 @@ export const Contact = () => {
                   <input
                     type="email"
                     id="email"
-                    name="email"
-                    value={formData.email}
+                    name="from_email"
+                    value={formData.from_email}
                     onChange={handleChange}
                     required
                     className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700/50 text-white transition-all"
                     placeholder="yourmail@example.com"
-                    name="from_email"
                   />
                 </motion.div>
               </div>
@@ -385,7 +383,6 @@ export const Contact = () => {
                     required
                     className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700/50 text-white transition-all"
                     placeholder="Project Inquiry"
-                    name="subject"
                   />
                 </motion.div>
               </div>
@@ -410,7 +407,6 @@ export const Contact = () => {
                     rows="4"
                     className="w-full px-4 py-3 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-700/50 text-white transition-all"
                     placeholder="Hello, I would like to discuss..."
-                    name="message"
                   ></textarea>
                 </motion.div>
               </div>
